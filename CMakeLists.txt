@@ -23,6 +23,7 @@ include(GNUInstallDirs)
 
 # Version number has a `-dev` suffix, but CMake does not support it.
 project(espeak-ng VERSION "1.51")
+set(espeak-ng_PACKAGE_VERSION "${PROJECT_VERSION}-dev")
 
 # Original Autoconf provided some options.
 # They are replicated here under different names.
@@ -200,7 +201,6 @@ install(
 # ### Macros and compiler options
 
 set(espeak-ng_DATA "espeak-ng-data")
-set(espeak-ng_PACKAGE_VERSION "${PROJECT_VERSION}-dev")
 target_compile_definitions(
   ${TARGET_NAME}
   PRIVATE "PACKAGE_VERSION=\"${espeak-ng_PACKAGE_VERSION}\""
@@ -365,10 +365,16 @@ target_include_directories(
 #
 # ### Macros and compiler options
 
+target_compile_definitions(
+  ${TARGET_NAME}
+  PRIVATE "PACKAGE_VERSION=\"${espeak-ng_PACKAGE_VERSION}\""
+)
+
+# These are found in Automake but not in Visual Studio projects.
 if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  target_compile_options(
+  target_compile_definitions(
     ${TARGET_NAME}
-    PRIVATE "-fPIC" "-fno-exceptions" "-fvisibility=hidden"
+    PRIVATE "_BSD_SOURCE" "_DEFAULT_SOURCE" "_POSIX_C_SOURCE=200112L"
   )
 endif()
 
@@ -395,14 +401,8 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
       "_CRT_NONSTDC_NO_DEPRECATE"
   )
 else()
-  target_compile_options(
-    ${TARGET_NAME}
-    PRIVATE
-      # Disable warnings.
-      "-Wno-endif-labels"
-      # Enable warnings.
-      "-pedantic"
-  )
+  # Disable warnings.
+  target_compile_options(${TARGET_NAME} PRIVATE "-Wno-endif-labels")
 endif()
 
 #

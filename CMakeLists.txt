@@ -422,15 +422,13 @@ endif()
 set(TARGET_NAME "${PROJECT_NAME}-data")
 add_custom_target(${TARGET_NAME} ALL)
 
-# Data generation is hard-coded.
+# Data generation is hard-coded by eSpeak NG, relative input source data.
 # So input is copied first into build directory
 # to not pollute source directory, before generating data.
-add_custom_target(${TARGET_NAME}-make-directory ALL)
-add_dependencies(${TARGET_NAME} ${TARGET_NAME}-make-directory)
 set(${TARGET_NAME}_OUTPUT_DIR "${PROJECT_BINARY_DIR}/data_output")
 foreach(DIRECTORY_TO_COPY dictsource;espeak-ng-data;phsource)
   add_custom_command(
-    TARGET ${TARGET_NAME}-make-directory
+    TARGET ${TARGET_NAME}
     PRE_BUILD
     COMMAND
       "${CMAKE_COMMAND}" ARGS "-E" "copy_directory"
@@ -439,28 +437,29 @@ foreach(DIRECTORY_TO_COPY dictsource;espeak-ng-data;phsource)
   )
 endforeach()
 
-# The actual commands to compile data.
-add_custom_command(
-  TARGET ${TARGET_NAME}
-  PRE_BUILD
-  # Input hard-coded as `<path_flag>/../phsource/intonations`
-  # Output hard-coded as `<path_flag>/intonations`.
-  COMMAND
-    espeak-ng-executable ARGS
-    # eSpeak NG wants path first.
-    "--path=\"${${TARGET_NAME}_OUTPUT_DIR}/espeak-ng-data\""
-    "--compile-intonation"
+# CMake code to execute on install.
+# This is the beginning part of CMake code
+# that can execute the eSpeak NG binary.
+string(
+  JOIN
+  " "
+  ESPEAK_NG_EXECUTE_PROCESS
+  "execute_process(COMMAND"
+  "\"${CMAKE_INSTALL_FULL_BINDIR}/espeak-ng\""
+  "\"--path=${${TARGET_NAME}_OUTPUT_DIR}/espeak-ng-data\""
+  # Requires ")" to be appended later before using this.
 )
 
-add_custom_command(
-  TARGET ${TARGET_NAME}
-  PRE_BUILD
-  COMMAND
-    espeak-ng-executable ARGS
-    # eSpeak NG wants path first.
-    "--path=\"${${TARGET_NAME}_OUTPUT_DIR}/espeak-ng-data\""
-    "--compile-phonemes"
-)
+# The actual commands to compile data.
+# Since the eSpeak NG binary is used to compile the data,
+# the compilation is done in install time
+# because shared libraries are guaranteed to be found after installing
+# (or at least they should be in a normal setup).
+# If the compilation is done at build time,
+# then it is possible that the binary cannot find required libraries.
+# This is particularly apparent in Windows without `$RPATH`.
+install(CODE "${ESPEAK_NG_EXECUTE_PROCESS} \"--compile-intonation\")")
+install(CODE "${ESPEAK_NG_EXECUTE_PROCESS} \"--compile-phonemes\")")
 
 list(
   APPEND
@@ -472,16 +471,16 @@ list(
 )
 
 foreach(LANG_TO_COMPILE ${LANGUAGE_COMPILE_LIST})
-  add_custom_command(
-    TARGET ${TARGET_NAME}
-    POST_BUILD
-    COMMAND
-      espeak-ng-executable ARGS
-      # eSpeak NG wants path first.
-      "--path=\"${${TARGET_NAME}_OUTPUT_DIR}/espeak-ng-data\""
-      "--compile=${LANG_TO_COMPILE}"
-    WORKING_DIRECTORY "${espeak-ng_ROOT}/dictsource"
+  string(
+    JOIN
+    " "
+    ESPEAK_NG_INSTALL_CODE
+    "${ESPEAK_NG_EXECUTE_PROCESS}"
+    "\"--compile=${LANG_TO_COMPILE}\""
+    "\"WORKING_DIRECTORY\""
+    "\"${${TARGET_NAME}_OUTPUT_DIR}/dictsource\")"
   )
+  install(CODE "${ESPEAK_NG_INSTALL_CODE}")
 endforeach()
 
 #

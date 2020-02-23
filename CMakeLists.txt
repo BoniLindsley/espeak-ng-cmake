@@ -278,26 +278,9 @@ if("${${PROJECT_NAME}_WITH_PCAUDIOLIB}")
     ${TARGET_NAME} PUBLIC "HAVE_PCAUDIOLIB_AUDIO_H"
   )
 
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    # The Windows build given seems to build pcaudiolib together
-    # with the main library.
-    # This is probably more convenient for distribution purposes,
-    # since, in other builds, it is linked as a dependency.
-    # It can probably be moved out to a separate target.
-    target_sources(
-      ${TARGET_NAME}
-      PRIVATE
-        "${espeak-ng_ROOT}/src/pcaudiolib/src/audio.c"
-        "${espeak-ng_ROOT}/src/pcaudiolib/src/windows.c"
-        "${espeak-ng_ROOT}/src/pcaudiolib/src/xaudio2.cpp"
-    )
-
-    # In Autoconf, this is earlier in the include directory list.
-    # It should not matter.
-    target_include_directories(
-      ${TARGET_NAME}
-      PRIVATE "${espeak-ng_ROOT}/src/pcaudiolib/src/include"
-    )
+  if("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+    find_package(pcaudiolib REQUIRED)
+    target_link_libraries(${TARGET_NAME} pcaudiolib::pcaudiolib)
   else()
     # Assume the library can be found on other systems.
     target_link_libraries(${TARGET_NAME} pcaudio)

@@ -1,21 +1,42 @@
 cmake_minimum_required(VERSION 3.12)
 
-# Write down where the source code of eSpeak NG is.
-# This assumes that it is next to this repository,
-# both inside some source directory.
-
-# ```
-# src
-# |-- espeak-ng
-# |-- espeak-ng-cmake
-# ```
-#
-# This is needed to find source files.
-# Change this if this CMake source file is moved.
-get_filename_component(
-  PROJECT_ROOT_PARENT "${CMAKE_SOURCE_DIR}" DIRECTORY
+# Make a cursory attempt to find eSpeak NG sources.
+# Allow for the following scenarios:
+#   * The eSpeak NG repository is checked out into a child directory:
+#     ```
+#     espeak-ng-cmake
+#     |-- CMakeLists.txt  (This file)
+#     |-- espeak-ng  (eSpeak NG sources)
+#         |-- src
+#             |-- espeak-ng.c
+#     ```
+#   * The eSpeak NG repository is checked out into the same directory,
+#     or equivalently this file is copied into the directory:
+#     ```
+#     |-- espeak-ng  (eSpeak NG sources)
+#         |-- CMakeLists.txt  (This file)
+#         |-- src
+#             |-- espeak-ng.c
+#     ```
+#   * The eSpeak NG repository is checked out into a sibling directory:
+#     ```
+#     |-- espeak-ng-cmake
+#     |   |-- CMakeLists.txt  (This file)
+#     |-- espeak-ng  (eSpeak NG sources)
+#         |-- src
+#             |-- espeak-ng.c
+#     ```
+find_path(
+  espeak-ng_ROOT
+  NAMES
+    "src/espeak-ng.c"
+    "src/include/espeak-ng/espeak_ng.h"
+    "src/libespeak-ng/speech.c"
+  PATHS "." ".."
+  PATH_SUFFIXES "espeak-ng"
+  DOC "eSpeak NG repository root "
+  NO_DEFAULT_PATH
 )
-set(espeak-ng_ROOT "${PROJECT_ROOT_PARENT}/espeak-ng")
 
 # Installation will try use a standard file directory structure.
 # The included module provides functions for that.

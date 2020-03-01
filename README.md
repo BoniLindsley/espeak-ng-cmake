@@ -27,6 +27,9 @@ Known issues:
 
   * Packaging eSpeak NG requires copying `espeak-ng-data` and `SDL2.dll`
     to the same directory as the binary.
+  * There are stutters in audio output, probably due to buffering issues.
+  * Extra build options enabling Klatt, MBROLA support, SONIC
+    and asynchronous commands produce unusable binaries.
 
 
 ## Purpose

@@ -49,7 +49,7 @@ set(espeak-ng_PACKAGE_VERSION "${PROJECT_VERSION}-dev")
 # Original Autoconf provided some options.
 # They are replicated here under different names.
 # They do not seem to be available in Windows though...?
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
   set(${PROJECT_NAME}_WITH_KLATT TRUE)
   set(${PROJECT_NAME}_WITH_MBROLA TRUE)
   set(${PROJECT_NAME}_WITH_SONIC FALSE) # Not supported in Windows.

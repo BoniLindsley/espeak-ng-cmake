@@ -25,8 +25,6 @@ can be done as follows, roughly:
 
 Known issues:
 
-  * Only debug build works.
-    Release build output binary gets stuck in a busy loop.
   * Packaging eSpeak NG requires copying `espeak-ng-data` and `SDL2.dll`
     to the same directory as the binary.
 

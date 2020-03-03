@@ -549,6 +549,47 @@ install(
 )
 
 #
+# ### Data that depends on options.
+
+# MBROLA build doe not seem to be built at all on Windows.
+if("${${PROJECT_NAME}_WITH_MBROLA}")
+  if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+    file(
+      MAKE_DIRECTORY
+      # Make sure MBROLA compile output directory exists.
+      "${${TARGET_NAME}_OUTPUT_DIR}/espeak-ng-data/mbrola_ph"
+    )
+
+    list(
+      APPEND
+      MBROLA_COMPILE_LIST
+      af1;ar1;ar2;ca;cr1;cs;de2;de4;de6;de8;ee1;en1;es;es3;es4;fr;gr1;gr2
+      grc-de6;hn1;hu1;ic1;id1;in;ir1;it1;it3;jp;la1;lt;ma1;mx1;mx2;nl;nz1
+      pl1;pt1;ptbr;ptbr4;ro1;sv;sv2;tl1;tr1;us;us3;vz;zh
+    )
+    foreach(LANG_TO_COMPILE ${MBROLA_COMPILE_LIST})
+      string(
+        JOIN
+        " "
+        ESPEAK_NG_INSTALL_CODE
+        "${ESPEAK_NG_EXECUTE_PROCESS}"
+        "\"--compile-mbrola=phsource/mbrola/${LANG_TO_COMPILE}\""
+        "\"WORKING_DIRECTORY\""
+        "\"${${TARGET_NAME}_OUTPUT_DIR}\")"
+      )
+      install(CODE "${ESPEAK_NG_INSTALL_CODE}")
+    endforeach()
+
+    # Determine which files to install.
+    install(
+      DIRECTORY
+        "${${TARGET_NAME}_OUTPUT_DIR}/${espeak-ng_DATA}/mbrola_ph"
+      DESTINATION "${CMAKE_INSTALL_DATADIR}/${espeak-ng_DATA}"
+    )
+  endif()
+endif()
+
+#
 #
 #
 # ## Create a CMake package that imports all targets in this project.

@@ -57,7 +57,7 @@ if("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
   set(${PROJECT_NAME}_WITH_MBROLA TRUE)
   set(${PROJECT_NAME}_WITH_SONIC FALSE) # Not supported in Windows.
   set(${PROJECT_NAME}_WITH_ASYNC FALSE) # Not supported in Windows.
-  set(${PROJECT_NAME}_WITH_PCAUDIOLIB TRUE) # Might break if false.
+  set(${PROJECT_NAME}_WITH_PCAUDIOLIB TRUE)
   # The extra language are in the Windows installer.
   # So they are added here,
   # even though they are disabled by default in Autoconf.

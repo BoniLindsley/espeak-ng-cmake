@@ -30,6 +30,7 @@ Known issues:
   * There are stutters in audio output, probably due to buffering issues.
   * Extra build options enabling Klatt, MBROLA support, SONIC
     and asynchronous commands produce unusable binaries.
+    * Disabling `pcaudiolib` seems to be fine.
 
 
 ## Purpose

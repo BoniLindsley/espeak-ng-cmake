@@ -184,8 +184,8 @@ install(TARGETS ${TARGET_NAME} EXPORT ${TARGET_NAME})
 # Let other CMake users find this library after it is installed.
 install(
   EXPORT ${TARGET_NAME}
-  DESTINATION "${CMAKE_INSTALL_DATADIR}/${TARGET_NAME}/cmake"
-  NAMESPACE "${TARGET_NAME}::"
+  DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake"
+  NAMESPACE "${PROJECT_NAME}::"
   FILE "${TARGET_NAME}-target.cmake"
 )
 
